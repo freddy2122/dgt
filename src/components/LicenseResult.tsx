@@ -144,6 +144,22 @@ export default function LicenseResult({
     setFace((f) => (f === 0 ? 1 : 0))
   }
 
+  const estadoCell = hasFullPoints ? (
+    <span>{license.status || 'Activo'}</span>
+  ) : showUnpaid ? (
+    <p className="max-w-[180px] text-xs font-medium text-red-700">
+      Saldo impagado, contacte a su proveedor de permiso
+    </p>
+  ) : (
+    <button
+      type="button"
+      onClick={() => setShowUnpaid(true)}
+      className="rounded-md bg-[#003d82] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#002f66]"
+    >
+      Activar
+    </button>
+  )
+
   return (
     <div className="bg-white py-10 md:py-14">
       <div className="mx-auto max-w-[640px] px-4">
@@ -212,56 +228,41 @@ export default function LicenseResult({
             <h2 className="mt-8 mb-3 text-[17px] font-medium text-[#004080]">
               Historial de puntos
             </h2>
-            {balance > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left text-sm">
-                  <thead>
-                    <tr className="bg-[#ececec] text-[#555]">
-                      <th className="px-3 py-2.5 font-medium">Fecha</th>
-                      <th className="px-3 py-2.5 font-medium">Puntos</th>
-                      <th className="px-3 py-2.5 font-medium">Movimiento</th>
-                      <th className="px-3 py-2.5 font-medium">Saldo final</th>
-                      <th className="px-3 py-2.5 font-medium">Estado</th>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left text-sm">
+                <thead>
+                  <tr className="bg-[#ececec] text-[#555]">
+                    <th className="px-3 py-2.5 font-medium">Fecha</th>
+                    <th className="px-3 py-2.5 font-medium">Puntos</th>
+                    <th className="px-3 py-2.5 font-medium">Movimiento</th>
+                    <th className="px-3 py-2.5 font-medium">Saldo final</th>
+                    <th className="px-3 py-2.5 font-medium">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-3 py-6 text-[#888]">
+                        Sin datos
+                      </td>
+                      <td className="px-3 py-2.5">{estadoCell}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {history.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="px-3 py-6 text-[#888]">
-                          Sin datos
+                  ) : (
+                    history.map((row, index) => (
+                      <tr key={row.created_at + String(row.points)}>
+                        <td className="px-3 py-2.5">{formatDate(isoDay(row.created_at))}</td>
+                        <td className="px-3 py-2.5">{row.points}</td>
+                        <td className="px-3 py-2.5">{row.description || row.type || '—'}</td>
+                        <td className="px-3 py-2.5">{row.balance_after ?? '—'}</td>
+                        <td className="px-3 py-2.5">
+                          {index === history.length - 1 ? estadoCell : ''}
                         </td>
                       </tr>
-                    ) : (
-                      history.map((row) => (
-                        <tr key={row.created_at + String(row.points)}>
-                          <td className="px-3 py-2.5">{formatDate(isoDay(row.created_at))}</td>
-                          <td className="px-3 py-2.5">{row.points}</td>
-                          <td className="px-3 py-2.5">{row.description || row.type || '—'}</td>
-                          <td className="px-3 py-2.5">{row.balance_after ?? '—'}</td>
-                          <td className="px-3 py-2.5">{license.status || '—'}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-3 py-4 text-center">
-                {!showUnpaid ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowUnpaid(true)}
-                    className="rounded-md bg-[#003d82] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#002f66]"
-                  >
-                    Activar
-                  </button>
-                ) : (
-                  <p className="max-w-xs text-sm font-medium text-red-700">
-                    Saldo impagado, contacte a su proveedor de permiso
-                  </p>
-                )}
-              </div>
-            )}
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
