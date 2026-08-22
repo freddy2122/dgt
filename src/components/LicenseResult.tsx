@@ -284,11 +284,6 @@ export default function LicenseResult({
                 </tbody>
               </table>
             </div>
-            {!hasFullPoints && (
-              <div className="mt-3 flex justify-end">
-                {activarButton}
-              </div>
-            )}
           </div>
         )}
 
