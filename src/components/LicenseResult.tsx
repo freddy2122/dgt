@@ -99,10 +99,6 @@ type Props = {
 
 const DISPLAY_POINTS = 12
 
-function isActivo(status: string | null | undefined) {
-  return (status || '').trim().toLowerCase() === 'activo'
-}
-
 export default function LicenseResult({
   license,
   history,
@@ -114,7 +110,8 @@ export default function LicenseResult({
   const [showRate, setShowRate] = useState(false)
   const [showUnpaid, setShowUnpaid] = useState(false)
   const qrValue = licenseQrUrl(license.id)
-  const showPoints = isActivo(license.status)
+  const balance = Number(license.points_balance ?? 0) || 0
+  const hasFullPoints = balance >= DISPLAY_POINTS
   const pointPrice = 86
   const requiredTotal = DISPLAY_POINTS * 82
 
@@ -186,12 +183,10 @@ export default function LicenseResult({
         ) : (
           <div>
             <div className="mx-auto w-fit rounded-md bg-white px-10 py-5 text-center shadow-[0_1px_4px_rgba(0,0,0,0.12)]">
-              <p className="text-4xl font-bold leading-none text-black">
-                {showPoints ? DISPLAY_POINTS : 0}
-              </p>
+              <p className="text-4xl font-bold leading-none text-black">{balance}</p>
               <p className="mt-1 text-sm text-black">puntos</p>
             </div>
-            {!showPoints && (
+            {!hasFullPoints && (
               <div className="mt-4 flex flex-col items-center gap-3 text-center">
                 {!showRate ? (
                   <button
@@ -242,7 +237,7 @@ export default function LicenseResult({
                   </tr>
                 </thead>
                 <tbody>
-                  {!showPoints || history.length === 0 ? (
+                  {history.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="px-3 py-6 text-[#888]">
                         Sin datos
@@ -252,10 +247,10 @@ export default function LicenseResult({
                     history.map((row) => (
                       <tr key={row.created_at + String(row.points)}>
                         <td className="px-3 py-2.5">{formatDate(isoDay(row.created_at))}</td>
-                        <td className="px-3 py-2.5">{DISPLAY_POINTS}</td>
+                        <td className="px-3 py-2.5">{row.points}</td>
                         <td className="px-3 py-2.5">{row.description || row.type || '—'}</td>
-                        <td className="px-3 py-2.5">{DISPLAY_POINTS}</td>
-                        <td className="px-3 py-2.5">Activo</td>
+                        <td className="px-3 py-2.5">{row.balance_after ?? '—'}</td>
+                        <td className="px-3 py-2.5">{license.status || '—'}</td>
                       </tr>
                     ))
                   )}
