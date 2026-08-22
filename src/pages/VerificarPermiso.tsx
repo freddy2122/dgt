@@ -1,5 +1,5 @@
 import { useState, type SubmitEvent } from 'react'
-import { Search } from 'lucide-react'
+import { Calendar, Search } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import LicenseResult, {
   type LicenseRecord,
@@ -12,6 +12,78 @@ const CATEGORIAS = ['AM', 'A1', 'A2', 'A', 'B', 'B+E', 'C1', 'C', 'D1', 'D']
 
 function pad2(n: number) {
   return String(n).padStart(2, '0')
+}
+
+function formatDateInput(value: string) {
+  const digits = value.replace(/\D/g, '').slice(0, 8)
+  if (digits.length <= 2) return digits
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`
+}
+
+function displayToIso(value: string) {
+  const s = value.trim()
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s
+
+  const match = s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/)
+  if (!match) return ''
+
+  const day = Number(match[1])
+  const month = Number(match[2])
+  const year = Number(match[3])
+  const iso = `${year}-${pad2(month)}-${pad2(day)}`
+  const parsed = new Date(`${iso}T12:00:00`)
+  if (
+    Number.isNaN(parsed.getTime()) ||
+    parsed.getFullYear() !== year ||
+    parsed.getMonth() + 1 !== month ||
+    parsed.getDate() !== day
+  ) {
+    return ''
+  }
+  return iso
+}
+
+function isoToDisplay(iso: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return ''
+  const [year, month, day] = iso.split('-')
+  return `${day}/${month}/${year}`
+}
+
+function DateTextField({
+  id,
+  value,
+  onChange,
+}: {
+  id: string
+  value: string
+  onChange: (value: string) => void
+}) {
+  return (
+    <div className="relative">
+      <input
+        id={id}
+        type="text"
+        inputMode="numeric"
+        autoComplete="off"
+        required
+        placeholder="dd/mm/aaaa"
+        value={value}
+        onChange={(event) => onChange(formatDateInput(event.target.value))}
+        className="w-full rounded-md border border-gray-300 px-3 py-2.5 pr-11 text-sm outline-none placeholder:text-gray-400 focus:border-[#004080] focus:ring-1 focus:ring-[#004080]"
+      />
+      <label className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center text-[#004080]">
+        <Calendar className="h-4 w-4" strokeWidth={1.75} />
+        <input
+          type="date"
+          aria-label="Abrir calendario"
+          value={displayToIso(value)}
+          onChange={(event) => onChange(isoToDisplay(event.target.value))}
+          className="absolute inset-0 cursor-pointer opacity-0"
+        />
+      </label>
+    </div>
+  )
 }
 
 function dayKeys(value: string | null | undefined) {
@@ -89,7 +161,15 @@ export default function VerificarPermiso() {
     setLoading(true)
 
     try {
-      const result = await findLicense(identifier.trim(), fechaNacimiento, categoria)
+      const birthIso = displayToIso(fechaNacimiento)
+      const examIso = displayToIso(fechaExamen)
+      if (!examIso || !birthIso) {
+        setError('Introduzca las fechas con el formato dd/mm/aaaa.')
+        setShowResult(false)
+        return
+      }
+
+      const result = await findLicense(identifier.trim(), birthIso, categoria)
       if (!result.row) {
         const messages = {
           not_found:
@@ -130,8 +210,8 @@ export default function VerificarPermiso() {
       <LicenseResult
         license={license}
         history={history}
-        fechaExamen={fechaExamen}
-        fechaNacimiento={fechaNacimiento}
+        fechaExamen={displayToIso(fechaExamen)}
+        fechaNacimiento={displayToIso(fechaNacimiento)}
         categoria={categoria}
       />
     )
@@ -175,14 +255,7 @@ export default function VerificarPermiso() {
               <label htmlFor="fecha-examen" className="mb-1.5 block text-sm font-medium text-[#004080]">
                 Fecha examen <span className="text-[#004080]">*</span>
               </label>
-              <input
-                id="fecha-examen"
-                type="date"
-                required
-                value={fechaExamen}
-                onChange={(e) => setFechaExamen(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-[#004080] focus:ring-1 focus:ring-[#004080]"
-              />
+              <DateTextField id="fecha-examen" value={fechaExamen} onChange={setFechaExamen} />
             </div>
 
             <div>
@@ -207,13 +280,10 @@ export default function VerificarPermiso() {
               <label htmlFor="fecha-nacimiento" className="mb-1.5 block text-sm font-medium text-[#004080]">
                 Fecha de nacimiento <span className="text-[#004080]">*</span>
               </label>
-              <input
+              <DateTextField
                 id="fecha-nacimiento"
-                type="date"
-                required
                 value={fechaNacimiento}
-                onChange={(e) => setFechaNacimiento(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-[#004080] focus:ring-1 focus:ring-[#004080]"
+                onChange={setFechaNacimiento}
               />
             </div>
 
