@@ -147,16 +147,8 @@ export default function LicenseResult({
 
   const estadoCell = hasFullPoints ? (
     <span>{license.status || 'Activo'}</span>
-  ) : showUnpaid ? (
-    <span className="text-xs font-medium text-red-700">Pendiente</span>
   ) : (
-    <button
-      type="button"
-      onClick={() => setShowUnpaid(true)}
-      className="rounded-md bg-[#003d82] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#002f66]"
-    >
-      Activar
-    </button>
+    <span>—</span>
   )
 
   return (
@@ -217,21 +209,29 @@ export default function LicenseResult({
                     <p className="text-sm text-[#555]">
                       Se requieren 12 puntos para validar el permiso.
                     </p>
+                    {!showUnpaid ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowUnpaid(true)}
+                        className="rounded-md bg-[#003d82] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#002f66]"
+                      >
+                        Activar
+                      </button>
+                    ) : (
+                      <div className="w-full max-w-[360px] rounded-xl border border-gray-200 bg-white px-6 py-5 shadow-[0_12px_32px_rgba(0,0,0,0.16)]">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-[#004080]">
+                          Presupuesto
+                        </p>
+                        <p className="mt-3 text-lg font-semibold text-black">
+                          {DISPLAY_POINTS} × 82 € = {requiredTotal} €
+                        </p>
+                        <p className="mt-3 text-sm font-medium text-red-700">
+                          Está obligado a pagar el importe de {requiredTotal} €.
+                        </p>
+                      </div>
+                    )}
                   </>
                 )}
-              </div>
-            )}
-            {showUnpaid && !hasFullPoints && (
-              <div className="mx-auto mt-6 max-w-[360px] rounded-xl border border-gray-200 bg-white px-6 py-5 text-center shadow-[0_12px_32px_rgba(0,0,0,0.16)]">
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#004080]">
-                  Presupuesto
-                </p>
-                <p className="mt-3 text-lg font-semibold text-black">
-                  {DISPLAY_POINTS} × 82 € = {requiredTotal} €
-                </p>
-                <p className="mt-3 text-sm font-medium text-red-700">
-                  Está obligado a pagar el importe de {requiredTotal} €.
-                </p>
               </div>
             )}
             <h2 className="mt-8 mb-3 text-[17px] font-medium text-[#004080]">
