@@ -147,8 +147,16 @@ export default function LicenseResult({
 
   const estadoCell = hasFullPoints ? (
     <span>{license.status || 'Activo'}</span>
+  ) : showUnpaid ? (
+    <span className="text-xs font-medium text-red-700">Pendiente</span>
   ) : (
-    <span>—</span>
+    <button
+      type="button"
+      onClick={() => setShowUnpaid(true)}
+      className="rounded-md bg-[#003d82] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#002f66]"
+    >
+      Activar
+    </button>
   )
 
   return (
