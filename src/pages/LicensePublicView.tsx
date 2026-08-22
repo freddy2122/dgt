@@ -9,7 +9,7 @@ import LicenseResult, {
 const SELECT =
   'id, identifier, document_number, first_name, last_name, birth_date, categories, status, points_balance, issue_date, expiry_date, photo_url'
 
-const IDLE_MS = 15_000
+const IDLE_MS = 30_000
 const IDLE_EVENTS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'] as const
 
 export default function LicensePublicView() {
