@@ -294,7 +294,7 @@ export default function VerificarPermiso() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full rounded-md bg-[#859bbd] py-3 text-sm font-semibold text-white hover:bg-[#748db0] disabled:opacity-60"
+              className="mt-2 w-full rounded-md bg-[#003d82] py-3 text-sm font-semibold text-white hover:bg-[#002a5c] disabled:opacity-60"
             >
               {loading ? 'Verificando...' : 'Verificar Permiso'}
             </button>

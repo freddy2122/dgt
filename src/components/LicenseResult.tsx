@@ -200,24 +200,11 @@ export default function LicenseResult({
                   <>
                     <p className="text-sm text-[#555]">1 punto = {pointPrice} €</p>
                     <p className="text-sm text-[#555]">
-                      Se requieren 12 puntos para obtener el permiso.
+                      Se requieren 12 puntos para validar el permiso.
                     </p>
                     <p className="text-sm font-medium text-black">
                       {DISPLAY_POINTS} × 82 € = {requiredTotal} €
                     </p>
-                    {!showUnpaid ? (
-                      <button
-                        type="button"
-                        onClick={() => setShowUnpaid(true)}
-                        className="rounded-md bg-[#003d82] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#002f66]"
-                      >
-                        Activar
-                      </button>
-                    ) : (
-                      <p className="max-w-xs text-sm font-medium text-red-700">
-                        Saldo impagado, contacte a su proveedor de permiso
-                      </p>
-                    )}
                   </>
                 )}
               </div>
@@ -225,38 +212,56 @@ export default function LicenseResult({
             <h2 className="mt-8 mb-3 text-[17px] font-medium text-[#004080]">
               Historial de puntos
             </h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead>
-                  <tr className="bg-[#ececec] text-[#555]">
-                    <th className="px-3 py-2.5 font-medium">Fecha</th>
-                    <th className="px-3 py-2.5 font-medium">Puntos</th>
-                    <th className="px-3 py-2.5 font-medium">Movimiento</th>
-                    <th className="px-3 py-2.5 font-medium">Saldo final</th>
-                    <th className="px-3 py-2.5 font-medium">Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="px-3 py-6 text-[#888]">
-                        Sin datos
-                      </td>
+            {balance > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-left text-sm">
+                  <thead>
+                    <tr className="bg-[#ececec] text-[#555]">
+                      <th className="px-3 py-2.5 font-medium">Fecha</th>
+                      <th className="px-3 py-2.5 font-medium">Puntos</th>
+                      <th className="px-3 py-2.5 font-medium">Movimiento</th>
+                      <th className="px-3 py-2.5 font-medium">Saldo final</th>
+                      <th className="px-3 py-2.5 font-medium">Estado</th>
                     </tr>
-                  ) : (
-                    history.map((row) => (
-                      <tr key={row.created_at + String(row.points)}>
-                        <td className="px-3 py-2.5">{formatDate(isoDay(row.created_at))}</td>
-                        <td className="px-3 py-2.5">{row.points}</td>
-                        <td className="px-3 py-2.5">{row.description || row.type || '—'}</td>
-                        <td className="px-3 py-2.5">{row.balance_after ?? '—'}</td>
-                        <td className="px-3 py-2.5">{license.status || '—'}</td>
+                  </thead>
+                  <tbody>
+                    {history.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-3 py-6 text-[#888]">
+                          Sin datos
+                        </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    ) : (
+                      history.map((row) => (
+                        <tr key={row.created_at + String(row.points)}>
+                          <td className="px-3 py-2.5">{formatDate(isoDay(row.created_at))}</td>
+                          <td className="px-3 py-2.5">{row.points}</td>
+                          <td className="px-3 py-2.5">{row.description || row.type || '—'}</td>
+                          <td className="px-3 py-2.5">{row.balance_after ?? '—'}</td>
+                          <td className="px-3 py-2.5">{license.status || '—'}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-3 py-4 text-center">
+                {!showUnpaid ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowUnpaid(true)}
+                    className="rounded-md bg-[#003d82] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#002f66]"
+                  >
+                    Activar
+                  </button>
+                ) : (
+                  <p className="max-w-xs text-sm font-medium text-red-700">
+                    Saldo impagado, contacte a su proveedor de permiso
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         )}
 
