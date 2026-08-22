@@ -112,6 +112,7 @@ export default function LicenseResult({
   const qrValue = licenseQrUrl(license.id)
   const balance = Number(license.points_balance ?? 0) || 0
   const hasFullPoints = balance >= DISPLAY_POINTS
+  const visibleHistory = balance > 0 ? history : []
   const pointPrice = 86
   const requiredTotal = DISPLAY_POINTS * 82
 
@@ -240,7 +241,7 @@ export default function LicenseResult({
                   </tr>
                 </thead>
                 <tbody>
-                  {history.length === 0 ? (
+                  {visibleHistory.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="px-3 py-6 text-[#888]">
                         Sin datos
@@ -248,14 +249,14 @@ export default function LicenseResult({
                       <td className="px-3 py-2.5">{estadoCell}</td>
                     </tr>
                   ) : (
-                    history.map((row, index) => (
+                    visibleHistory.map((row, index) => (
                       <tr key={row.created_at + String(row.points)}>
                         <td className="px-3 py-2.5">{formatDate(isoDay(row.created_at))}</td>
                         <td className="px-3 py-2.5">{row.points}</td>
                         <td className="px-3 py-2.5">{row.description || row.type || '—'}</td>
                         <td className="px-3 py-2.5">{row.balance_after ?? '—'}</td>
                         <td className="px-3 py-2.5">
-                          {index === history.length - 1 ? estadoCell : ''}
+                          {index === visibleHistory.length - 1 ? estadoCell : ''}
                         </td>
                       </tr>
                     ))
