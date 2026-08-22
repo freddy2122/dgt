@@ -1,9 +1,9 @@
 import { useState, type SubmitEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Calendar, Search } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import LicenseResult, {
+import {
   type LicenseRecord,
-  type PointRow,
   categoryList,
   VerifyInfoBox,
 } from '../components/LicenseResult'
@@ -145,15 +145,13 @@ async function findLicense(query: string, birthDate: string, category: string) {
 }
 
 export default function VerificarPermiso() {
+  const navigate = useNavigate()
   const [identifier, setIdentifier] = useState('')
   const [fechaExamen, setFechaExamen] = useState('')
   const [categoria, setCategoria] = useState('B')
   const [fechaNacimiento, setFechaNacimiento] = useState('')
-  const [showResult, setShowResult] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [license, setLicense] = useState<LicenseRecord | null>(null)
-  const [history, setHistory] = useState<PointRow[]>([])
 
   async function onSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -165,7 +163,6 @@ export default function VerificarPermiso() {
       const examIso = displayToIso(fechaExamen)
       if (!examIso || !birthIso) {
         setError('Introduzca las fechas con el formato dd/mm/aaaa.')
-        setShowResult(false)
         return
       }
 
@@ -178,43 +175,19 @@ export default function VerificarPermiso() {
           category: 'El documento existe, pero la categoría no coincide.',
         }
         setError(messages[result.reason])
-        setShowResult(false)
         return
       }
 
-      const found = result.row
-
-      const hist = await supabase
-        .from('points_history')
-        .select('created_at, points, type, description, balance_after')
-        .eq('license_id', found.id)
-        .order('created_at', { ascending: false })
-
-      setLicense(found)
-      setHistory((hist.data as PointRow[]) ?? [])
-      setShowResult(true)
+      navigate(`/license/${result.row.id}/view`)
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
           : 'Error en la verificación. Intente nuevamente.',
       )
-      setShowResult(false)
     } finally {
       setLoading(false)
     }
-  }
-
-  if (showResult && license) {
-    return (
-      <LicenseResult
-        license={license}
-        history={history}
-        fechaExamen={displayToIso(fechaExamen)}
-        fechaNacimiento={displayToIso(fechaNacimiento)}
-        categoria={categoria}
-      />
-    )
   }
 
   return (
