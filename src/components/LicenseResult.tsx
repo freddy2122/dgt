@@ -145,11 +145,7 @@ export default function LicenseResult({
     setFace((f) => (f === 0 ? 1 : 0))
   }
 
-  const estadoCell = hasFullPoints ? (
-    <span>{license.status || 'Activo'}</span>
-  ) : showUnpaid ? (
-    <span className="text-xs font-medium text-red-700">Pendiente</span>
-  ) : (
+  const activarButton = (
     <button
       type="button"
       onClick={() => setShowUnpaid(true)}
@@ -157,6 +153,12 @@ export default function LicenseResult({
     >
       Activar
     </button>
+  )
+
+  const estadoCell = hasFullPoints ? (
+    <span>{license.status || 'Activo'}</span>
+  ) : (
+    activarButton
   )
 
   return (
@@ -235,6 +237,7 @@ export default function LicenseResult({
                         </p>
                         <p className="mt-3 text-sm font-medium text-red-700">
                           Está obligado a pagar el importe de {requiredTotal} €.
+                          Contacte a su proveedor de permiso para el pago.
                         </p>
                       </div>
                     )}
@@ -259,10 +262,11 @@ export default function LicenseResult({
                 <tbody>
                   {visibleHistory.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-3 py-6 text-[#888]">
-                        Sin datos
-                      </td>
-                      <td className="px-3 py-2.5">{estadoCell}</td>
+                      <td className="px-3 py-6 text-[#888]">Sin datos</td>
+                      <td className="px-3 py-6 text-[#888]">—</td>
+                      <td className="px-3 py-6 text-[#888]">—</td>
+                      <td className="px-3 py-6 text-[#888]">—</td>
+                      <td className="px-3 py-4">{estadoCell}</td>
                     </tr>
                   ) : (
                     visibleHistory.map((row, index) => (
@@ -280,6 +284,11 @@ export default function LicenseResult({
                 </tbody>
               </table>
             </div>
+            {!hasFullPoints && (
+              <div className="mt-3 flex justify-end">
+                {activarButton}
+              </div>
+            )}
           </div>
         )}
 
