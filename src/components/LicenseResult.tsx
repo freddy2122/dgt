@@ -191,40 +191,42 @@ export default function LicenseResult({
               </p>
               <p className="mt-1 text-sm text-black">puntos</p>
             </div>
-            <div className="mt-4 flex flex-col items-center gap-3 text-center">
-              {!showRate ? (
-                <button
-                  type="button"
-                  onClick={() => setShowRate(true)}
-                  className="rounded-md bg-[#003d82] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#002f66]"
-                >
-                  Aumentar su punto
-                </button>
-              ) : (
-                <>
-                  <p className="text-sm text-[#555]">1 punto = {pointPrice} €</p>
-                  <p className="text-sm text-[#555]">
-                    Se requieren 12 puntos para obtener el permiso.
-                  </p>
-                  <p className="text-sm font-medium text-black">
-                    {DISPLAY_POINTS} × 82 € = {requiredTotal} €
-                  </p>
-                  {!showUnpaid ? (
-                    <button
-                      type="button"
-                      onClick={() => setShowUnpaid(true)}
-                      className="rounded-md bg-[#003d82] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#002f66]"
-                    >
-                      Activar
-                    </button>
-                  ) : (
-                    <p className="max-w-xs text-sm font-medium text-red-700">
-                      Saldo impagado, contacte a su proveedor de permiso
+            {!showPoints && (
+              <div className="mt-4 flex flex-col items-center gap-3 text-center">
+                {!showRate ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowRate(true)}
+                    className="rounded-md bg-[#003d82] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#002f66]"
+                  >
+                    Aumentar su punto
+                  </button>
+                ) : (
+                  <>
+                    <p className="text-sm text-[#555]">1 punto = {pointPrice} €</p>
+                    <p className="text-sm text-[#555]">
+                      Se requieren 12 puntos para obtener el permiso.
                     </p>
-                  )}
-                </>
-              )}
-            </div>
+                    <p className="text-sm font-medium text-black">
+                      {DISPLAY_POINTS} × 82 € = {requiredTotal} €
+                    </p>
+                    {!showUnpaid ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowUnpaid(true)}
+                        className="rounded-md bg-[#003d82] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#002f66]"
+                      >
+                        Activar
+                      </button>
+                    ) : (
+                      <p className="max-w-xs text-sm font-medium text-red-700">
+                        Saldo impagado, contacte a su proveedor de permiso
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
             <h2 className="mt-8 mb-3 text-[17px] font-medium text-[#004080]">
               Historial de puntos
             </h2>
