@@ -41,34 +41,38 @@ export default function AdminDashboard() {
   }, [])
 
   return (
-    <div>
-      <p className="text-sm text-slate-500">Bonjour{email ? `, ${email}` : ''}</p>
-      <h1 className="mt-1 text-2xl font-semibold text-slate-900">Tableau de bord</h1>
-      <p className="mt-1 text-sm text-slate-500">Aperçu des enregistrements de démonstration.</p>
+    <div className="min-w-0">
+      <p className="truncate text-sm text-slate-500">Bonjour{email ? `, ${email}` : ''}</p>
+      <h1 className="mt-1 text-xl font-semibold text-slate-900 sm:text-2xl">Tableau de bord</h1>
+      <p className="mt-1 text-sm text-slate-500">
+        Aperçu des enregistrements de démonstration.
+      </p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
         {cards.map(({ key, label, icon: Icon, tint }) => (
           <div
             key={key}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
           >
             <div className={`inline-flex rounded-xl p-2 ${tint}`}>
               <Icon className="h-4 w-4" />
             </div>
-            <p className="mt-4 text-3xl font-semibold text-slate-900">{stats[key]}</p>
-            <p className="mt-1 text-sm text-slate-500">{label}</p>
+            <p className="mt-3 text-2xl font-semibold text-slate-900 sm:mt-4 sm:text-3xl">
+              {stats[key]}
+            </p>
+            <p className="mt-1 truncate text-xs text-slate-500 sm:text-sm">{label}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:mt-8 sm:p-6">
         <h2 className="text-base font-semibold text-slate-900">Raccourcis</h2>
         <p className="mt-1 text-sm text-slate-500">
           Accède à la liste pour consulter ou supprimer des enregistrements de test.
         </p>
         <Link
           to="/admin/licenses"
-          className="mt-5 inline-flex rounded-xl bg-[#0b1220] px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+          className="mt-5 flex w-full items-center justify-center rounded-xl bg-[#0b1220] px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 sm:inline-flex sm:w-auto"
         >
           Voir les enregistrements
         </Link>

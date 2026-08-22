@@ -39,9 +39,16 @@ export default function AdminLayout() {
     navigate('/admin-login')
   }
 
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [open])
+
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0b1220] text-sm text-slate-400">
+      <div className="flex min-h-dvh items-center justify-center bg-[#0b1220] text-sm text-slate-400">
         Chargement du back-office…
       </div>
     )
@@ -71,7 +78,7 @@ export default function AdminLayout() {
   )
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9]">
+    <div className="min-h-dvh overflow-x-hidden bg-[#f1f5f9]">
       {open && (
         <button
           type="button"
@@ -82,7 +89,7 @@ export default function AdminLayout() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-[#0b1220] text-white transition-transform lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-[min(16rem,85vw)] flex-col bg-[#0b1220] text-white transition-transform duration-200 lg:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -90,7 +97,7 @@ export default function AdminLayout() {
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#3b82f6] text-sm font-bold">
             BO
           </span>
-          <div>
+          <div className="min-w-0">
             <p className="text-sm font-semibold">Back-office</p>
             <p className="text-[11px] text-slate-400">Environnement de test</p>
           </div>
@@ -105,31 +112,31 @@ export default function AdminLayout() {
             onClick={() => void logout()}
             className="mt-3 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-slate-300 hover:bg-white/5 hover:text-white"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-4 w-4 shrink-0" />
             Déconnexion
           </button>
         </div>
       </aside>
 
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur md:px-8">
+      <div className="min-w-0 lg:pl-64">
+        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-slate-200 bg-white/90 px-3 py-3 backdrop-blur sm:px-6 md:px-8">
           <button
             type="button"
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
+            className="shrink-0 rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
             onClick={() => setOpen(true)}
             aria-label="Ouvrir le menu"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <p className="hidden text-sm font-medium text-slate-500 lg:block">
+          <p className="min-w-0 truncate text-sm font-medium text-slate-700">
             Console d’administration
           </p>
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-amber-700">
+          <span className="ml-auto shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-amber-700 sm:px-3 sm:text-[11px]">
             Test
           </span>
         </header>
 
-        <div className="px-4 py-8 md:px-8">
+        <div className="min-w-0 px-3 py-5 sm:px-6 sm:py-8 md:px-8">
           <Outlet />
         </div>
       </div>

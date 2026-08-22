@@ -195,7 +195,7 @@ export default function LicenseForm() {
         Toutes les informations saisies ici sont des données fictives de démonstration.
       </p>
 
-      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+      <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:mt-8 sm:p-6 md:p-8">
         {error && (
           <div className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         )}
@@ -324,17 +324,17 @@ export default function LicenseForm() {
             officiel n’est généré.
           </div>
 
-          <div className="flex justify-end gap-3 border-t border-slate-100 pt-6">
+          <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end">
             <Link
               to="/admin/licenses"
-              className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              className="rounded-xl border border-slate-200 px-5 py-2.5 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
               Annuler
             </Link>
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#0b1220] px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0b1220] px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Enregistrement…' : 'Enregistrer'}

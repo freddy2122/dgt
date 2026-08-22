@@ -169,11 +169,12 @@ export default function LicenseManage() {
         </button>
       </form>
 
-      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="mt-6 min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         {history.length === 0 ? (
           <p className="p-8 text-center text-sm text-slate-500">Aucun mouvement.</p>
         ) : (
-          <table className="w-full text-left text-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="border-b border-slate-100 bg-slate-50">
               <tr>
                 <th className="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Date</th>
@@ -197,6 +198,7 @@ export default function LicenseManage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

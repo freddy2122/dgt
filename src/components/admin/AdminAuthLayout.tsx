@@ -39,7 +39,7 @@ export default function AdminAuthLayout({ title, subtitle, children }: Props) {
               BO
             </span>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-wider text-[#3b82f6]">
               Administration
             </p>
