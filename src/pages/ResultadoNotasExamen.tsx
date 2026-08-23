@@ -25,22 +25,13 @@ function Field({ label, value }: { label: string; value: string }) {
 function SedeHeader() {
   return (
     <header className="border-b border-[#d8d8d8] bg-white">
-      <div className="flex items-stretch">
-        <div className="flex min-w-[42%] items-center gap-2 bg-[linear-gradient(180deg,#f1c400_0%,#f1c400_48%,#c60b1e_48%,#c60b1e_100%)] px-3 py-2.5 text-white sm:min-w-[280px] sm:px-4">
-          <div className="text-[10px] font-extrabold leading-[1.15] tracking-wide sm:text-[11px]">
-            GOBIERNO
-            <br />
-            DE ESPAÑA
-            <p className="mt-1.5 text-[9px] font-semibold leading-[1.15] sm:text-[10px]">
-              MINISTERIO
-              <br />
-              DEL INTERIOR
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-1 items-center justify-end bg-white px-3 py-2">
-          <img src="/logo.png" alt="DGT" className="h-11 w-auto object-contain sm:h-12" />
-        </div>
+      <div className="flex items-center justify-between gap-3 px-3 py-2 sm:px-4">
+        <img
+          src="https://sedegob.dggt.es/Logotipo_Footer-DGT.svg"
+          alt="Gobierno de España — DGT"
+          className="h-10 w-auto max-w-[58%] object-contain object-left sm:h-12"
+        />
+        <img src="/logo.png" alt="DGT" className="h-11 w-auto object-contain sm:h-12" />
       </div>
     </header>
   )
@@ -127,7 +118,12 @@ export default function ResultadoNotasExamen() {
           <h1 className="font-serif text-[28px] font-bold leading-none text-black sm:text-4xl">
             Sede electrónica
           </h1>
-          <p className="pb-0.5 text-sm text-[#9aa0a6] sm:text-base">sede.dgt.gob.es</p>
+          <a
+            href="https://sedegob.dggt.es/"
+            className="pb-0.5 text-sm text-[#9aa0a6] sm:text-base"
+          >
+            https://sedegob.dggt.es/
+          </a>
         </div>
 
         {loading ? (
