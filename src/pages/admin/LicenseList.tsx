@@ -15,6 +15,7 @@ type License = {
   points_balance: number
   expiry_date: string | null
   photo_url: string | null
+  exam_info_active?: boolean
 }
 
 export default function LicenseList() {
@@ -29,11 +30,25 @@ export default function LicenseList() {
     const { data, error: queryError } = await supabase
       .from('licenses')
       .select(
-        'id, identifier, document_number, first_name, last_name, birth_date, categories, status, points_balance, expiry_date, photo_url',
+        'id, identifier, document_number, first_name, last_name, birth_date, categories, status, points_balance, expiry_date, photo_url, exam_info_active',
       )
       .order('created_at', { ascending: false })
 
-    if (queryError) {
+    if (queryError && /exam_info_active/.test(queryError.message)) {
+      const fallback = await supabase
+        .from('licenses')
+        .select(
+          'id, identifier, document_number, first_name, last_name, birth_date, categories, status, points_balance, expiry_date, photo_url',
+        )
+        .order('created_at', { ascending: false })
+      if (fallback.error) {
+        setError(fallback.error.message)
+        setLicenses([])
+      } else {
+        setError('Exécute supabase/exam_notes.sql pour le statut des notes d’examen.')
+        setLicenses(fallback.data ?? [])
+      }
+    } else if (queryError) {
       setError(queryError.message)
       setLicenses([])
     } else {
@@ -144,6 +159,9 @@ export default function LicenseList() {
                     </p>
                     <p className="truncate text-xs text-slate-500">{license.identifier}</p>
                     <p className="truncate text-xs text-slate-500">{license.document_number}</p>
+                    <p className="mt-1 text-[11px] font-semibold text-slate-500">
+                      Notes examen : {license.exam_info_active ? 'activées' : 'inactives'}
+                    </p>
                   </div>
                   <span
                     className={`h-fit shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
@@ -199,7 +217,7 @@ export default function LicenseList() {
               <table className="w-full min-w-[900px] text-left">
                 <thead className="border-b border-slate-100 bg-slate-50">
                   <tr>
-                    {['Image', 'Identifiant', 'Nom', 'Naissance', 'Catégories', 'État', 'Points', 'Expiration', 'Actions'].map(
+                    {['Image', 'Identifiant', 'Nom', 'Naissance', 'Catégories', 'État', 'Notes examen', 'Points', 'Expiration', 'Actions'].map(
                       (label) => (
                         <th
                           key={label}
@@ -251,6 +269,17 @@ export default function LicenseList() {
                           }`}
                         >
                           {license.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                            license.exam_info_active
+                              ? 'bg-sky-50 text-sky-700'
+                              : 'bg-slate-100 text-slate-500'
+                          }`}
+                        >
+                          {license.exam_info_active ? 'Actives' : 'Inactives'}
                         </span>
                       </td>
                       <td className="px-5 py-4 font-semibold text-slate-900">

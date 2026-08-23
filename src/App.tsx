@@ -11,6 +11,7 @@ import InfoPage from './pages/InfoPage'
 import VerificarPermiso from './pages/VerificarPermiso'
 import AdmitidoExamen from './pages/AdmitidoExamen'
 import ConsultaAdmitidoExamen from './pages/ConsultaAdmitidoExamen'
+import ResultadoNotasExamen from './pages/ResultadoNotasExamen'
 import LicensePublicView from './pages/LicensePublicView'
 import NotFound from './pages/NotFound'
 import AdminRegister from './pages/admin/AdminRegister'
@@ -24,6 +25,8 @@ import AdminLayout from './components/admin/AdminLayout'
 export default function App() {
   return (
     <Routes>
+      <Route path="/resultado-notas-examen" element={<ResultadoNotasExamen />} />
+      <Route path="/resultado-notas-examen/:id" element={<ResultadoNotasExamen />} />
       <Route path="/admin-login" element={<AdminLogin />} />
       <Route path="/admin-register-administration" element={<AdminRegister />} />
       <Route path="/admin" element={<AdminLayout />}>

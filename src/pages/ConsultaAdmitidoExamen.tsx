@@ -1,4 +1,5 @@
 import { useState, type SubmitEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import DateTextField from '../components/DateTextField'
 import { CATEGORIAS, displayToIso, findLicense } from '../lib/licenseLookup'
 
@@ -6,27 +7,18 @@ const fieldClass =
   'w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm outline-none placeholder:text-gray-400 focus:border-[#004080] focus:ring-1 focus:ring-[#004080]'
 const labelClass = 'mb-1.5 block text-sm font-medium text-[#004080]'
 
-type AdmissionResult = {
-  admitted: boolean
-  name: string
-  document: string
-  category: string
-  examDate: string
-}
-
 export default function ConsultaAdmitidoExamen() {
+  const navigate = useNavigate()
   const [identifier, setIdentifier] = useState('')
   const [fechaExamen, setFechaExamen] = useState('')
   const [categoria, setCategoria] = useState('B')
   const [fechaNacimiento, setFechaNacimiento] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [result, setResult] = useState<AdmissionResult | null>(null)
 
   async function onSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     setError('')
-    setResult(null)
     setLoading(true)
 
     try {
@@ -39,23 +31,11 @@ export default function ConsultaAdmitidoExamen() {
 
       const found = await findLicense(identifier.trim(), birthIso, categoria)
       if (!found.row) {
-        setResult({
-          admitted: false,
-          name: '',
-          document: identifier.trim().toUpperCase(),
-          category: categoria,
-          examDate: fechaExamen,
-        })
+        navigate('/resultado-notas-examen')
         return
       }
 
-      setResult({
-        admitted: true,
-        name: `${found.row.first_name} ${found.row.last_name}`.trim(),
-        document: found.row.document_number || found.row.identifier,
-        category: categoria,
-        examDate: fechaExamen,
-      })
+      navigate(`/resultado-notas-examen/${found.row.id}`)
     } catch {
       setError('No se ha podido consultar. Inténtelo de nuevo.')
     } finally {
@@ -136,48 +116,6 @@ export default function ConsultaAdmitidoExamen() {
             </button>
           </form>
         </div>
-
-        {result && (
-          <div
-            className={`mt-6 rounded-lg border px-5 py-4 ${
-              result.admitted
-                ? 'border-green-200 bg-green-50 text-green-900'
-                : 'border-amber-200 bg-amber-50 text-amber-950'
-            }`}
-          >
-            {result.admitted ? (
-              <>
-                <p className="text-lg font-bold">Admitido</p>
-                <p className="mt-2">Consta como admitido a la convocatoria del examen.</p>
-                <ul className="mt-3 space-y-1 text-sm">
-                  {result.name && (
-                    <li>
-                      <strong>Nombre:</strong> {result.name}
-                    </li>
-                  )}
-                  <li>
-                    <strong>Documento:</strong> {result.document}
-                  </li>
-                  <li>
-                    <strong>Clase de permiso:</strong> {result.category}
-                  </li>
-                  <li>
-                    <strong>Fecha de examen:</strong> {result.examDate}
-                  </li>
-                </ul>
-              </>
-            ) : (
-              <>
-                <p className="text-lg font-bold">No admitido</p>
-                <p className="mt-2">
-                  No constas como admitido a esta convocatoria. Comprueba el NIF/NIE, la fecha de
-                  nacimiento, la clase de permiso y la fecha de examen, o consulta con tu
-                  autoescuela.
-                </p>
-              </>
-            )}
-          </div>
-        )}
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Save, ImagePlus } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { fieldClass, labelClass } from '../../components/admin/AdminAuthLayout'
+import { EXAM_GRADES, EXAM_TYPES } from '../../lib/examNotes'
 
 type FormData = {
   identifier: string
@@ -16,6 +17,11 @@ type FormData = {
   issue_date: string
   expiry_date: string
   photo_url: string
+  exam_info_active: boolean
+  exam_type: string
+  exam_date: string
+  exam_grade: string
+  exam_errors: string
 }
 
 const initialForm: FormData = {
@@ -30,6 +36,11 @@ const initialForm: FormData = {
   issue_date: '',
   expiry_date: '',
   photo_url: '',
+  exam_info_active: false,
+  exam_type: 'CIRCULACIÓN',
+  exam_date: '',
+  exam_grade: 'APTO',
+  exam_errors: '0',
 }
 
 const MAX_PHOTO_BYTES = 2 * 1024 * 1024
@@ -51,13 +62,30 @@ export default function LicenseForm() {
     if (!id) return
 
     async function load() {
-      const { data, error: queryError } = await supabase
+      let { data, error: queryError } = await supabase
         .from('licenses')
         .select(
-          'identifier, document_number, first_name, last_name, birth_date, categories, status, points_balance, issue_date, expiry_date, photo_url',
+          'identifier, document_number, first_name, last_name, birth_date, categories, status, points_balance, issue_date, expiry_date, photo_url, exam_info_active, exam_type, exam_date, exam_grade, exam_errors',
         )
         .eq('id', id)
         .single()
+
+      if (queryError && /exam_/.test(queryError.message)) {
+        const fallback = await supabase
+          .from('licenses')
+          .select(
+            'identifier, document_number, first_name, last_name, birth_date, categories, status, points_balance, issue_date, expiry_date, photo_url',
+          )
+          .eq('id', id)
+          .single()
+        data = fallback.data
+          ? { ...fallback.data, exam_info_active: false, exam_type: null, exam_date: null, exam_grade: null, exam_errors: null }
+          : null
+        queryError = fallback.error
+        if (!fallback.error) {
+          setError('Exécute supabase/exam_notes.sql dans Supabase pour activer les notes d’examen.')
+        }
+      }
 
       if (queryError) {
         setError(queryError.message)
@@ -76,6 +104,11 @@ export default function LicenseForm() {
           issue_date: String(data.issue_date ?? '').slice(0, 10),
           expiry_date: String(data.expiry_date ?? '').slice(0, 10),
           photo_url: data.photo_url ?? '',
+          exam_info_active: Boolean(data.exam_info_active),
+          exam_type: data.exam_type ?? 'CIRCULACIÓN',
+          exam_date: String(data.exam_date ?? '').slice(0, 10),
+          exam_grade: data.exam_grade ?? 'APTO',
+          exam_errors: String(data.exam_errors ?? 0),
         })
         setPhotoPreview(data.photo_url ?? '')
       }
@@ -144,7 +177,7 @@ export default function LicenseForm() {
       return
     }
 
-    const payload = {
+    const basePayload = {
       identifier: form.identifier.trim(),
       document_number: form.document_number.trim(),
       first_name: form.first_name.trim(),
@@ -160,10 +193,30 @@ export default function LicenseForm() {
       expiry_date: form.expiry_date || null,
       photo_url: photoUrl || null,
     }
+    const payload = {
+      ...basePayload,
+      exam_info_active: form.exam_info_active,
+      exam_type: form.exam_type || null,
+      exam_date: form.exam_date || null,
+      exam_grade: form.exam_grade || null,
+      exam_errors: Number(form.exam_errors) || 0,
+    }
 
-    const result = editing
-      ? await supabase.from('licenses').update(payload).eq('id', id)
-      : await supabase.from('licenses').insert(payload)
+    const save = (body: typeof payload | typeof basePayload) =>
+      editing
+        ? supabase.from('licenses').update(body).eq('id', id)
+        : supabase.from('licenses').insert(body)
+
+    let result = await save(payload)
+    if (result.error && /exam_/.test(result.error.message)) {
+      result = await save(basePayload)
+      if (!result.error) {
+        setError('Dossier enregistré. Exécute supabase/exam_notes.sql pour activer les notes d’examen.')
+        setSaving(false)
+        navigate('/admin/licenses')
+        return
+      }
+    }
 
     if (result.error) {
       setError(result.error.message)
@@ -317,6 +370,66 @@ export default function LicenseForm() {
               value={form.expiry_date}
               onChange={(value) => update('expiry_date', value)}
             />
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <h2 className="text-sm font-semibold text-slate-900">Notes d’examen (client)</h2>
+            <p className="mt-1 text-xs text-slate-500">
+              Inactif par défaut. Tant que ce n’est pas activé, le client ne voit aucune
+              information d’examen après la recherche.
+            </p>
+            <label className="mt-4 flex items-center gap-3 text-sm font-medium text-slate-800">
+              <input
+                type="checkbox"
+                checked={form.exam_info_active}
+                onChange={(event) => update('exam_info_active', event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300"
+              />
+              Activer l’affichage des notes d’examen
+            </label>
+            <div className="mt-4 grid gap-5 md:grid-cols-2">
+              <div>
+                <label className={labelClass}>Type de preuve</label>
+                <select
+                  value={form.exam_type}
+                  onChange={(event) => update('exam_type', event.target.value)}
+                  className={fieldClass}
+                >
+                  {EXAM_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Field
+                label="Date d’examen"
+                type="date"
+                value={form.exam_date}
+                onChange={(value) => update('exam_date', value)}
+              />
+              <div>
+                <label className={labelClass}>Calificación</label>
+                <select
+                  value={form.exam_grade}
+                  onChange={(event) => update('exam_grade', event.target.value)}
+                  className={fieldClass}
+                >
+                  {EXAM_GRADES.map((grade) => (
+                    <option key={grade} value={grade}>
+                      {grade}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Field
+                label="Número de errores"
+                type="number"
+                min="0"
+                value={form.exam_errors}
+                onChange={(value) => update('exam_errors', value)}
+              />
+            </div>
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
