@@ -149,6 +149,12 @@ export const sedeServicios = [
     href: '/consultar-puntos',
   },
   {
+    title: 'Consulta tu nota de examen',
+    text: 'Comprueba si estás admitido y consulta el resultado de tu examen',
+    image: '/images/carnet-de-conducir.jpg',
+    href: '/admitido-examen',
+  },
+  {
     title: 'Renovar permiso',
     text: 'Renovación del permiso de conducir por internet',
     image: '/images/Midgt-Listados-renew.jpg',
@@ -180,6 +186,8 @@ export const mainNav: NavItem[] = [
     href: '/sede-electronica',
     children: [
       { label: 'Sede Electrónica', href: '/sede-electronica' },
+      { label: 'Consulta tu nota de examen', href: '/verificar-permiso' },
+      { label: '¿Estoy admitido al examen?', href: '/admitido-examen' },
       { label: 'Cita previa', href: '/cita-previa' },
       { label: 'Pagar multas', href: '/pagar-multas' },
       { label: 'Consultar puntos', href: '/consultar-puntos' },

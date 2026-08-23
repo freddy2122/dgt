@@ -9,6 +9,7 @@ import Comunicacion from './pages/Comunicacion'
 import Transparencia from './pages/Transparencia'
 import InfoPage from './pages/InfoPage'
 import VerificarPermiso from './pages/VerificarPermiso'
+import AdmitidoExamen from './pages/AdmitidoExamen'
 import LicensePublicView from './pages/LicensePublicView'
 import NotFound from './pages/NotFound'
 import AdminRegister from './pages/admin/AdminRegister'
@@ -34,6 +35,8 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/verificar-permiso" element={<VerificarPermiso />} />
+        <Route path="/admitido-examen" element={<AdmitidoExamen />} />
+        <Route path="/consulta-nota-examen" element={<VerificarPermiso />} />
         <Route path="/license/:id/view" element={<LicensePublicView />} />
         <Route path="/sede-electronica" element={<SedeElectronica />} />
         <Route path="/seguridad" element={<Seguridad />} />
